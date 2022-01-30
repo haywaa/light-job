@@ -61,7 +61,7 @@ public class PeriodicJobScheduler {
 
     private List<TaskDO> notTriggeredTaskList = null;
 
-    @PostConstruct
+    //@PostConstruct
     public void start() {
         scheduleThread = new Thread(() -> {
             while(true) {

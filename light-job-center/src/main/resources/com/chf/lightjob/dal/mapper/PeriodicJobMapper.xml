@@ -35,4 +35,97 @@
     WHERE trigger_next_time &lt;= SUBDATE(now(),interval -#{preReadSecond} second)
     limit #{pagesize}
   </select>
+
+  <insert id="addJob">
+    INSERT INTO periodic_job(
+       `job_group`
+      ,`job_desc`
+      ,`add_time`
+      ,`update_time`
+      ,`author`
+      ,`alarm_email`
+      ,`schedule_type`
+      ,`schedule_conf`
+      ,`misfire_strategy`
+      ,`executor_route_strategy`
+      ,`executor_handler`
+      ,`executor_param`
+      ,`executor_block_strategy`
+      ,`executor_timeout`
+      ,`executor_fail_retry_count`
+      ,`child_jobid`
+      ,`status`
+      ,`trigger_last_time`
+      ,`trigger_next_time`
+      ,`schedule_fail_times`
+    ) VALUES (
+      #{jobGroup}
+      ,#{jobDesc}
+      ,#{addTime}
+      ,#{updateTime}
+      ,#{author}
+      ,#{alarmEmail}
+      ,#{scheduleType}
+      ,#{scheduleConf}
+      ,#{misfireStrategy}
+      ,#{executorRouteStrategy}
+      ,#{executorHandler}
+      ,#{executorParam}
+      ,#{executorBlockStrategy}
+      ,#{executorTimeout}
+      ,#{executorFailRetryCount}
+      ,#{childJobid}
+      ,#{status}
+      ,#{triggerLastTime}
+      ,#{triggerNextTime}
+      ,#{scheduleFailTimes}
+    )
+  </insert>
+
+
+  <insert id="batchUpdateJob">
+    INSERT INTO periodic_job(
+       `id`
+      ,`status`
+      ,`trigger_last_time`
+      ,`trigger_next_time`
+      ,`schedule_fail_times`
+      ,`update_time`
+      ,`job_group` ,`job_desc`, `schedule_type`, `misfire_strategy`, `executor_timeout`, `executor_fail_retry_count`
+    ) VALUES
+      <foreach collection="list" close=")" open="(" separator="),(" item="item">
+        #{item.id}
+        ,#{item.status}
+        ,#{item.triggerLastTime}
+        ,#{item.triggerNextTime}
+        ,#{item.scheduleFailTimes}
+        ,now()
+        ,'' , '', '', '', 0, 0
+      </foreach>
+    ON DUPLICATE KEY UPDATE
+      `status` = VALUES(`status`)
+      , trigger_last_time = VALUES(trigger_last_time)
+      , trigger_next_time = VALUES(trigger_next_time)
+      , schedule_fail_times = VALUES(schedule_fail_times)
+      , update_time = VALUES(update_time)
+  </insert>
+
+  <update id="updateById">
+    UPDATE periodic_job SET
+        `status` = #{status}
+      , trigger_last_time = #{triggerLastTime}
+      , trigger_next_time = #{triggerNextTime}
+      , schedule_fail_times = #{scheduleFailTimes}
+      , update_time = now()
+    WHERE id = #{id}
+  </update>
+
+  <select id="queryAll" resultMap="BaseResultMap">
+    SELECT * FROM periodic_job
+  </select>
+
+  <!-- 定时清理批量更新可能产生的异常数据 -->
+  <delete id="clearInvalidData">
+    DELETE FROM periodic_job WHERE job_group = ''
+  </delete>
 </mapper>
