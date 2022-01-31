@@ -12,4 +12,6 @@ import org.apache.ibatis.annotations.Param;
 public interface TaskMapper extends BaseMapper<TaskDO> {
 
     List<TaskScheduleInfo> findAllTaskPlanTime(@Param("bizType") String bizType);
+
+    int batchAdd(@Param("list") List<TaskDO> list);
 }

@@ -2,8 +2,12 @@ package com.chf.lightjob.scheduler;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -76,7 +80,6 @@ public class PeriodicJobScheduler {
                     if (notTriggeredTaskList != null && !notTriggeredTaskList.isEmpty()) {
                         // TODO 触发任务（发MQ)
                     }
-
                 } catch (Throwable t) {
                     if (t instanceof InterruptedException) {
                         Thread.currentThread().interrupt();
@@ -113,7 +116,8 @@ public class PeriodicJobScheduler {
         if (periodicJobDOList != null && !periodicJobDOList.isEmpty()) {
             scanedCount = periodicJobDOList.size();
             List<TaskDO> taskDOList = new ArrayList<>(scanedCount * 105 / 100);
-            String schdulerMark = null;// TODO localIp + scheduleBatchIndex;
+            // 扫描处理批次 localIp + scheduleBatchIndex
+            String schdulerMark = ":" + scheduleBatchIndex;// TODO localIp + scheduleBatchIndex;
             // 1. 构建Task列表，并刷新periodicJob下一次触发时间
             for (PeriodicJobDO periodicJobDO : periodicJobDOList) {
                 try {
@@ -180,23 +184,54 @@ public class PeriodicJobScheduler {
                 }
             }
 
-            // 2. 针对上一次分配任务异常中断，导致任务已添加，periodicJob配置未刷新，需要在本次添加任务时进行忽略。同时刷新periodicJob配置信息
-            String scheduler = lightJobMarkMapper.findMarkValue("periodic_job_scheduler");
-            if (scheduler != null && !scheduler.isEmpty()) {
-                // TODO 忽略上一次调度非正常中断已添加任务
-                List<TaskScheduleInfo> scheduledTaskList = taskMapper.findAllTaskPlanTime(schdulerMark);
-                // TODO 在scheulerMark变更前，更新上一次调度非正常退出periodicJob配置
-            }
+            // 2. 针对上一次分配任务异常中断，导致任务已添加，periodicJob配置未刷新，需要在本次添加任务时进行忽略。同时补偿刷新periodicJob配置信息
+            // 在scheulerMark变更前，更新上一次调度非正常退出periodicJob配置
+            compensateScheduledJob(taskDOList, periodicJobDOList);
 
             // 3. 将新增任务与配置变更保存至持久数据库
             // 标记任务开始分配
             lightJobMarkMapper.updateMarkValue("periodic_job_scheduler", schdulerMark);
-            // TODO addTaskDO to DB
-            // TODO update periodicJob.nextFireTime
+            // addTaskDO to DB
+            taskMapper.batchAdd(taskDOList);
+            // update periodicJob.nextFireTime
+            periodicJobMapper.batchUpdateJob(periodicJobDOList);
             // 标记任务分配完成
             lightJobMarkMapper.updateMarkValue("periodic_job_scheduler", null);
+            this.notTriggeredTaskList = taskDOList;
         }
         return scanedCount;
+    }
+
+    private void compensateScheduledJob(List<TaskDO> taskDOList, List<PeriodicJobDO> periodicJobDOList) {
+        String preSchedulerMark = lightJobMarkMapper.findMarkValue("periodic_job_scheduler");
+        if (preSchedulerMark != null && !preSchedulerMark.isEmpty()) {
+            //
+            List<TaskScheduleInfo> scheduledTaskList = taskMapper.findAllTaskPlanTime(preSchedulerMark);
+            if (scheduledTaskList != null && !scheduledTaskList.isEmpty()) {
+                Set<Long> scheduledJobIds = new HashSet<>();
+                Map<Long, Date> addJobTask = scheduledTaskList.stream().collect(Collectors.toMap(TaskScheduleInfo::getFromJobId, TaskScheduleInfo::getPlanTriggerTime));
+                for (Iterator<TaskDO> it = taskDOList.iterator(); it.hasNext(); ) {
+                    TaskDO taskDO = it.next();
+                    Date scheduledTime = addJobTask.get(taskDO.getFromJobId());
+                    if (taskDO.getPlanTriggerTime().equals(scheduledTime)) {
+                        // 忽略上一次调度非正常中断且periodicJob.nextFireTime未更新但已创建的taskDO
+                        it.remove();
+                        scheduledJobIds.add(taskDO.getFromJobId());
+                    }
+                }
+                if (!scheduledJobIds.isEmpty()) {
+                    List<PeriodicJobDO> compensateUpdateJobs = new ArrayList<>(scheduledJobIds.size());
+                    for (Iterator<PeriodicJobDO> it = periodicJobDOList.iterator(); it.hasNext(); ) {
+                        PeriodicJobDO periodicJobDO = it.next();
+                        if (scheduledJobIds.contains(periodicJobDO.getId())) {
+                            it.remove();
+                            compensateUpdateJobs.add(periodicJobDO);
+                        }
+                    }
+                    periodicJobMapper.batchUpdateJob(compensateUpdateJobs);
+                }
+            }
+        }
     }
 
     private TaskDO buildTaskFromPeriodicJob(PeriodicJobDO jobDO, String schdulerMark) {

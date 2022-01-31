@@ -32,4 +32,47 @@
     FROM task
     WHERE biz_key = #{bizType}
   </select>
+
+  <insert id="batchAdd">
+    INSERT INTO task(
+       `status`
+      ,`job_group`
+      ,`job_type`
+      ,`biz_key`
+      ,`plan_trigger_time`
+      ,`expire_time`
+      ,`executor_address`
+      ,`executor_handler`
+      ,`executor_param`
+      ,`executor_timeout`
+      ,`executor_fail_retry_count`
+      ,`retry_duration`
+      ,`from_job_id`
+      ,`trigger_time`
+      ,`trigger_index`
+      ,`failure_times`
+      ,`finish_time`
+      ,`trigger_log`
+    ) VALUES
+    <foreach collection="list" close=")" open="(" separator="),(" item="item">
+      #{item.status}
+      ,#{item.jobGroup}
+      ,#{item.jobType}
+      ,#{item.bizKey}
+      ,#{item.planTriggerTime}
+      ,#{item.expireTime}
+      ,#{item.executorAddress}
+      ,#{item.executorHandler}
+      ,#{item.executorParam}
+      ,#{item.executorTimeout}
+      ,#{item.executorFailRetryCount}
+      ,#{item.retryDuration}
+      ,#{item.fromJobId}
+      ,#{item.triggerTime}
+      ,#{item.triggerIndex}
+      ,#{item.failureTimes}
+      ,#{item.finishTime}
+      ,#{item.triggerLog}
+    </foreach>
+  </insert>
 </mapper>
