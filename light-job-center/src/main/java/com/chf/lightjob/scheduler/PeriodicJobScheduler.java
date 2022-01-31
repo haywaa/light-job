@@ -29,6 +29,7 @@ import com.chf.lightjob.enums.MisfireStrategyEnum;
 import com.chf.lightjob.enums.ScheduleTypeEnum;
 import com.chf.lightjob.service.DatabaseTimeService;
 import com.chf.lightjob.service.LockService;
+import com.chf.lightjob.service.TaskTriggerService;
 
 /**
  * @description
@@ -55,6 +56,9 @@ public class PeriodicJobScheduler {
     @Autowired
     private TaskMapper taskMapper;
 
+    @Autowired
+    private TaskTriggerService taskTriggerService;
+
     private Thread scheduleThread;
 
     private int preReadCount = 1000;
@@ -69,6 +73,11 @@ public class PeriodicJobScheduler {
     public void start() {
         scheduleThread = new Thread(() -> {
             while(true) {
+                if (!Thread.currentThread().isInterrupted()) {
+                    // log
+                    break;
+                }
+
                 long start = System.currentTimeMillis();
                 int scanedCount = 0;
                 try {
@@ -106,6 +115,7 @@ public class PeriodicJobScheduler {
                 }
             }
         });
+        scheduleThread.setName("light_job_periodic_job_scan");
         scheduleThread.start();
     }
 
@@ -250,7 +260,7 @@ public class PeriodicJobScheduler {
         taskDO.setExecutorFailRetryCount(jobDO.getExecutorFailRetryCount());
         taskDO.setRetryDuration("20");
         taskDO.setFromJobId(jobDO.getId());
-        //taskDO.setTriggerTime();
+        taskDO.setTriggerTime(taskDO.getPlanTriggerTime());
         //taskDO.setTriggerIndex();
         taskDO.setFailureTimes(0);
         //taskDO.setFinishTime();
