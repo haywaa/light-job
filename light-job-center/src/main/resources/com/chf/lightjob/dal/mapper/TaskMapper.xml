@@ -13,6 +13,7 @@
     <result column="biz_key" jdbcType="VARCHAR" property="bizKey" />
     <result column="plan_trigger_time" jdbcType="TIMESTAMP" property="planTriggerTime" />
     <result column="expire_time" jdbcType="TIMESTAMP" property="expireTime" />
+    <result column="block_strategy" jdbcType="VARCHAR" property="blockStrategy" />
     <result column="executor_address" jdbcType="VARCHAR" property="executorAddress" />
     <result column="executor_handler" jdbcType="VARCHAR" property="executorHandler" />
     <result column="executor_param" jdbcType="VARCHAR" property="executorParam" />
@@ -30,7 +31,11 @@
   <select id="findAllTaskPlanTime" resultType="com.chf.lightjob.dal.entity.TaskScheduleInfo">
     SELECT from_job_id AS fromJobId, plan_trigger_time AS planTriggerTime
     FROM task
-    WHERE biz_key = #{bizType}
+    WHERE biz_key = #{bizKey}
+  </select>
+
+  <select id="findAllTaskByBizKey" resultMap="BaseResultMap">
+    SELECT * FROM task WHERE biz_key = #{bizKey}
   </select>
 
   <insert id="batchAdd">
@@ -54,7 +59,7 @@
       ,`finish_time`
       ,`trigger_log`
     ) VALUES
-    <foreach collection="list" close=")" open="(" separator="),(" item="item">
+    <foreach close=")" collection="list" item="item" open="(" separator="),(">
       #{item.status}
       ,#{item.jobGroup}
       ,#{item.jobType}
@@ -75,4 +80,8 @@
       ,#{item.triggerLog}
     </foreach>
   </insert>
+
+  <select id="selectFirstUnfinishedTaskForJob" resultMap="BaseResultMap">
+    SELECT * FROM task WHERE id = (SELECT min(id) FROM task WHERE job_type=#{jobType} AND from_job_id = #{fromJobId} AND status != 2 AND status != 4)
+  </select>
 </mapper>

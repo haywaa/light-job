@@ -11,7 +11,11 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface TaskMapper extends BaseMapper<TaskDO> {
 
-    List<TaskScheduleInfo> findAllTaskPlanTime(@Param("bizType") String bizType);
+    List<TaskScheduleInfo> findAllTaskPlanTime(@Param("bizKey") String bizKey);
+
+    List<TaskDO> findAllTaskByBizKey(@Param("bizKey") String bizKey);
 
     int batchAdd(@Param("list") List<TaskDO> list);
+
+    TaskDO selectFirstUnfinishedTaskForJob(@Param("jobType") String jobType, @Param("fromJobId") Long fromJobId);
 }

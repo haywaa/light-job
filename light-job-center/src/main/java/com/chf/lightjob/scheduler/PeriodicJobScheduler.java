@@ -6,11 +6,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +65,7 @@ public class PeriodicJobScheduler {
 
     private int scheduleBatchIndex = 1;
 
-    private List<TaskDO> notTriggeredTaskList = null;
+    private String lastScheduleMark = null;
 
     //@PostConstruct
     public void start() {
@@ -82,12 +80,15 @@ public class PeriodicJobScheduler {
                 int scanedCount = 0;
                 try {
                     Thread.sleep(0);
+                    this.lastScheduleMark = null;
                     scanedCount = lockService.lock("periodic_job_schedule", () -> {
                         return scanScheduleJob();
                     });
-
-                    if (notTriggeredTaskList != null && !notTriggeredTaskList.isEmpty()) {
-                        // TODO 触发任务（发MQ)
+                    if (scanedCount > 0 && this.lastScheduleMark != null) {
+                        List<TaskDO> taskList = taskMapper.findAllTaskByBizKey(this.lastScheduleMark);
+                        if (taskList != null && !taskList.isEmpty()) {
+                            taskTriggerService.trigger(taskList);
+                        }
                     }
                 } catch (Throwable t) {
                     if (t instanceof InterruptedException) {
@@ -195,19 +196,24 @@ public class PeriodicJobScheduler {
             }
 
             // 2. 针对上一次分配任务异常中断，导致任务已添加，periodicJob配置未刷新，需要在本次添加任务时进行忽略。同时补偿刷新periodicJob配置信息
-            // 在scheulerMark变更前，更新上一次调度非正常退出periodicJob配置
             compensateScheduledJob(taskDOList, periodicJobDOList);
-
-            // 3. 将新增任务与配置变更保存至持久数据库
-            // 标记任务开始分配
-            lightJobMarkMapper.updateMarkValue("periodic_job_scheduler", schdulerMark);
-            // addTaskDO to DB
-            taskMapper.batchAdd(taskDOList);
-            // update periodicJob.nextFireTime
-            periodicJobMapper.batchUpdateJob(periodicJobDOList);
-            // 标记任务分配完成
-            lightJobMarkMapper.updateMarkValue("periodic_job_scheduler", null);
-            this.notTriggeredTaskList = taskDOList;
+            // 在scheulerMark变更前，更新上一次调度非正常退出periodicJob配置
+            if (!taskDOList.isEmpty() || !periodicJobDOList.isEmpty()) {
+                // 3. 将新增任务与配置变更保存至持久数据库
+                // 标记任务开始分配
+                lightJobMarkMapper.updateMarkValue("periodic_job_scheduler", schdulerMark);
+                // addTaskDO to DB
+                if (!taskDOList.isEmpty()) {
+                    taskMapper.batchAdd(taskDOList);
+                }
+                // update periodicJob.nextFireTime
+                if (!periodicJobDOList.isEmpty()) {
+                    periodicJobMapper.batchUpdateJob(periodicJobDOList);
+                }
+                // 标记任务分配完成
+                lightJobMarkMapper.updateMarkValue("periodic_job_scheduler", null);
+            }
+            this.lastScheduleMark = schdulerMark;
         }
         return scanedCount;
     }

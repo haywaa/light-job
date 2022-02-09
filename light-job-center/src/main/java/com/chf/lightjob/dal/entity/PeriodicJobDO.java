@@ -69,6 +69,12 @@ public class PeriodicJobDO extends BaseEntity {
     private String misfireStrategy;
 
     /**
+     * 阻塞处理策略
+     * Nullable:  true
+     */
+    private String blockStrategy;
+
+    /**
      * 执行器路由策略
      * Nullable:  true
      */
@@ -85,12 +91,6 @@ public class PeriodicJobDO extends BaseEntity {
      * Nullable:  true
      */
     private String executorParam;
-
-    /**
-     * 阻塞处理策略
-     * Nullable:  true
-     */
-    private String executorBlockStrategy;
 
     /**
      * 任务执行超时时间，单位秒

@@ -53,6 +53,12 @@ public class TaskDO extends BaseEntity {
     private Date expireTime;
 
     /**
+     * 阻塞处理策略
+     * Nullable:  true
+     */
+    private String blockStrategy;
+
+    /**
      * 执行器地址，本次执行的地址
      * Nullable:  true
      */

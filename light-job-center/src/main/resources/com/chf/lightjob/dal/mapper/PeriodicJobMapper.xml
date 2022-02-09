@@ -16,10 +16,10 @@
     <result column="schedule_type" jdbcType="VARCHAR" property="scheduleType" />
     <result column="schedule_conf" jdbcType="VARCHAR" property="scheduleConf" />
     <result column="misfire_strategy" jdbcType="VARCHAR" property="misfireStrategy" />
+    <result column="block_strategy" jdbcType="VARCHAR" property="blockStrategy" />
     <result column="executor_route_strategy" jdbcType="VARCHAR" property="executorRouteStrategy" />
     <result column="executor_handler" jdbcType="VARCHAR" property="executorHandler" />
     <result column="executor_param" jdbcType="VARCHAR" property="executorParam" />
-    <result column="executor_block_strategy" jdbcType="VARCHAR" property="executorBlockStrategy" />
     <result column="executor_timeout" jdbcType="INTEGER" property="executorTimeout" />
     <result column="executor_fail_retry_count" jdbcType="INTEGER" property="executorFailRetryCount" />
     <result column="child_jobid" jdbcType="VARCHAR" property="childJobid" />
@@ -93,7 +93,7 @@
       ,`update_time`
       ,`job_group` ,`job_desc`, `schedule_type`, `misfire_strategy`, `executor_timeout`, `executor_fail_retry_count`
     ) VALUES
-      <foreach collection="list" close=")" open="(" separator="),(" item="item">
+      <foreach close=")" collection="list" item="item" open="(" separator="),(">
         #{item.id}
         ,#{item.status}
         ,#{item.triggerLastTime}

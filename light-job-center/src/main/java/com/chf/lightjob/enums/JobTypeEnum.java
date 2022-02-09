@@ -9,5 +9,7 @@ public enum JobTypeEnum {
     /** 周期性任务 */
     PERIODIC_JOB,
     /** 延时任务 */
-    DELAY_JOB
+    DELAY_JOB,
+    /** 补偿任务 */
+    COMPENSATE_JOB,
 }

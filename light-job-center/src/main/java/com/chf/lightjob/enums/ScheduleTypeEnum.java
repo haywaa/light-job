@@ -1,7 +1,7 @@
 package com.chf.lightjob.enums;
 
 /**
- * @author xuxueli 2020-10-29 21:11:23
+ * Borrowed from xxl-job v2.1.0
  */
 public enum ScheduleTypeEnum {
 
