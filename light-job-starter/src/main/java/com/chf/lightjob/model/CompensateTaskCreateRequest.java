@@ -1,16 +1,14 @@
 package com.chf.lightjob.model;
 
-import java.util.Date;
-
 import lombok.Data;
 
 /**
  * @description
  * @author: davy
- * @create: 2022-01-29 00:31
+ * @create: 2022-02-09 23:29
  */
 @Data
-public class DelayTaskCreateRequest {
+public class CompensateTaskCreateRequest {
 
     private String taskHandler;
 
@@ -18,19 +16,14 @@ public class DelayTaskCreateRequest {
 
     private String params;
 
-    /**
-     * 可指定下一次重试时间, 默认立即执行
-     */
-    private Date nextFireTime;
-
     private static Builder builder() {
         return new Builder();
     }
 
     public static class Builder {
-        private DelayTaskCreateRequest req = new DelayTaskCreateRequest();
+        private CompensateTaskCreateRequest req = new CompensateTaskCreateRequest();
 
-        public DelayTaskCreateRequest build() {
+        public CompensateTaskCreateRequest build() {
             return req;
         }
 

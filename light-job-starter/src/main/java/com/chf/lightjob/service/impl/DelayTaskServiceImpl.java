@@ -17,14 +17,4 @@ public class DelayTaskServiceImpl implements DelayTaskService {
     public Long createTask(DelayTaskCreateRequest request) {
         return null;
     }
-
-    @Override
-    public <T> T execute(MainRunner<T> mainRunner, FollowRunner asyncRunner, DelayTaskCreateRequest request) {
-        return null;
-    }
-
-    @Override
-    public <T> T execute(MainRunner<T> mainRunner, FollowRunner followRunner, FollowRunAsync needAsync, DelayTaskCreateRequest request) {
-        return null;
-    }
 }
