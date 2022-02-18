@@ -117,7 +117,7 @@ public class TaskTriggerServiceImpl implements TaskTriggerService {
 
 
     private void notifyExecutor(TaskDO taskDO) {
-        // TODO 1. send MQ OR call executor by rpc
+        // TODO 1. send MQ, add Redis event in list OR call executor by rpc
         // 2. update task trigger info
     }
 }
