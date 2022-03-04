@@ -12,7 +12,7 @@ public enum BlockStrategyEnum {
     ;
 
     private String title;
-    private BlockStrategyEnum(String title) {
+    BlockStrategyEnum(String title) {
         this.title = title;
     }
 
