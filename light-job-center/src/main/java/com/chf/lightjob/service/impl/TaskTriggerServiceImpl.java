@@ -74,8 +74,6 @@ public class TaskTriggerServiceImpl implements TaskTriggerService {
                             return;
                         }
 
-
-
                         triggerTask(taskDO);
                     }
                 } catch (Throwable t) {
@@ -106,6 +104,7 @@ public class TaskTriggerServiceImpl implements TaskTriggerService {
                             if (BlockStrategyEnum.SERIAL_EXECUTION.name().equals(taskDO.getBlockStrategy())) {
                                 taskDO.setExpireTime(new Date()); // 以当前时间作为参照点
                                 taskService.refreshExpireTime(taskDO);
+                                taskMapper.updateById(taskDO);
                             } else if (BlockStrategyEnum.DISCARD_LATER.name().equals(taskDO.getBlockStrategy())) {
                                 // 忽略任务
                                 taskService.discardTask(taskDO.getId());

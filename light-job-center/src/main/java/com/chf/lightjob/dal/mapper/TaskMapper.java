@@ -18,4 +18,7 @@ public interface TaskMapper extends BaseMapper<TaskDO> {
     int batchAdd(@Param("list") List<TaskDO> list);
 
     TaskDO selectFirstUnfinishedTaskForJob(@Param("jobType") String jobType, @Param("fromJobId") Long fromJobId);
+
+    // TODO
+    int updateById(@Param("task") TaskDO taskDO);
 }

@@ -47,12 +47,14 @@
       ,`biz_key`
       ,`plan_trigger_time`
       ,`expire_time`
+      ,`expire_trigger_time`
+      ,`block_strategy`
       ,`executor_address`
       ,`executor_handler`
       ,`executor_param`
       ,`executor_timeout`
       ,`executor_fail_retry_count`
-      ,`retry_duration`
+      ,`max_retry_times`
       ,`from_job_id`
       ,`trigger_time`
       ,`trigger_index`
@@ -67,12 +69,14 @@
       ,#{item.bizKey}
       ,#{item.planTriggerTime}
       ,#{item.expireTime}
+      ,#{item.expireTriggerTime}
+      ,#{item.blockStrategy}
       ,#{item.executorAddress}
       ,#{item.executorHandler}
       ,#{item.executorParam}
       ,#{item.executorTimeout}
       ,#{item.executorFailRetryCount}
-      ,#{item.retryDuration}
+      ,#{item.maxRetryTimes}
       ,#{item.fromJobId}
       ,#{item.triggerTime}
       ,#{item.triggerIndex}
