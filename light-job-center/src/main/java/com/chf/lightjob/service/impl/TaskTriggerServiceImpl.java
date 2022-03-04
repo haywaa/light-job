@@ -1,5 +1,6 @@
 package com.chf.lightjob.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -15,6 +16,7 @@ import com.chf.lightjob.enums.BlockStrategyEnum;
 import com.chf.lightjob.enums.JobTypeEnum;
 import com.chf.lightjob.service.DatabaseTimeService;
 import com.chf.lightjob.service.LockService;
+import com.chf.lightjob.service.TaskService;
 import com.chf.lightjob.service.TaskTriggerService;
 
 /**
@@ -33,6 +35,9 @@ public class TaskTriggerServiceImpl implements TaskTriggerService {
 
     @Autowired
     private TaskMapper taskMapper;
+
+    @Autowired
+    private TaskService taskService;
 
     private LinkedBlockingQueue<List<TaskDO>> taskListQueue = new LinkedBlockingQueue(5);
     private ThreadPoolExecutor fastTriggerPool = null;
@@ -88,7 +93,8 @@ public class TaskTriggerServiceImpl implements TaskTriggerService {
 
     private void triggerTask(TaskDO taskDO) {
         this.fastTriggerPool.execute(() -> {
-            if (JobTypeEnum.PERIODIC_JOB.name().equals(taskDO.getJobType())) {
+            if (JobTypeEnum.PERIODIC_JOB.name().equals(taskDO.getJobType())
+                    && !BlockStrategyEnum.CONCURRENT_EXECUTION.name().equals(taskDO.getBlockStrategy())) {
                 lockService.lock("periodicjob_" + taskDO.getFromJobId(), () -> {
                     TaskDO firstUnfinshedTask = taskMapper.selectFirstUnfinishedTaskForJob(JobTypeEnum.PERIODIC_JOB.name(), taskDO.getFromJobId());
                     if (firstUnfinshedTask == null) {
@@ -98,13 +104,15 @@ public class TaskTriggerServiceImpl implements TaskTriggerService {
                     if (!firstUnfinshedTask.getId().equals(taskDO.getId())) {
                         if (firstUnfinshedTask.getId() < taskDO.getId()) {
                             if (BlockStrategyEnum.SERIAL_EXECUTION.name().equals(taskDO.getBlockStrategy())) {
-                                // TODO 延长过期时间
+                                taskDO.setExpireTime(new Date()); // 以当前时间作为参照点
+                                taskService.refreshExpireTime(taskDO);
                             } else if (BlockStrategyEnum.DISCARD_LATER.name().equals(taskDO.getBlockStrategy())) {
-                                // TODO 忽略任务
+                                // 忽略任务
+                                taskService.discardTask(taskDO.getId());
+                                return null;
                             } else {
                                 throw new RuntimeException("invalid block strategy:" + taskDO.getBlockStrategy());
                             }
-                            return null;
                         } else {
                             // 忽略，说明taskDO已经被异步finished了
                             return null;

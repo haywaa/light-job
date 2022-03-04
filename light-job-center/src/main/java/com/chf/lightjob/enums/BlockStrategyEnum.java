@@ -5,9 +5,9 @@ package com.chf.lightjob.enums;
  */
 public enum BlockStrategyEnum {
 
-    SERIAL_EXECUTION("Serial execution"),
-    /*CONCURRENT_EXECUTION("并行"),*/
-    DISCARD_LATER("Discard Later"),
+    SERIAL_EXECUTION("串行执行"),
+    CONCURRENT_EXECUTION("并发执行"),
+    DISCARD_LATER("忽略新任务"),
     //COVER_EARLY("Cover Early"),
     ;
 

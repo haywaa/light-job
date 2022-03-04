@@ -12,4 +12,5 @@ public enum TaskStatusEnum {
     EXECUTING, // 执行中
     FINISHED, // 已完成
     DISCARD, // 已忽略
+    DEADLINE, // 僵死任务
 }

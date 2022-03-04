@@ -9,5 +9,13 @@ import com.chf.lightjob.dal.entity.TaskDO;
  */
 public interface TaskService {
 
+    /**
+     * 刷新任务过期时间
+     */
     void refreshExpireTime(TaskDO taskDO);
+
+    /**
+     * 忽略任务
+     */
+    void discardTask(long taskId);
 }

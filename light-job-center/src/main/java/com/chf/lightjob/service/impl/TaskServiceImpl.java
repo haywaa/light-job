@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.chf.lightjob.dal.entity.TaskDO;
 import com.chf.lightjob.service.TaskService;
-
 /**
  * @description
  * @author: davy
@@ -22,5 +21,10 @@ public class TaskServiceImpl implements TaskService {
         Date fromTime = taskDO.getExpireTime() == null ? taskDO.getTriggerTime() : taskDO.getExpireTime();
         taskDO.setExpireTriggerTime(new Date(fromTime.getTime() + TRIGGER_OVERTIME));
         taskDO.setExpireTime(new Date(taskDO.getExpireTriggerTime().getTime() + taskDO.getExecutorTimeout()));
+    }
+
+    @Override
+    public void discardTask(long taskId) {
+        // TODO
     }
 }
