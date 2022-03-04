@@ -53,6 +53,12 @@ public class TaskDO extends BaseEntity {
     private Date expireTime;
 
     /**
+     * 触发过期时间，MQ消息的过期时间
+     * Nullable:  false
+     */
+    private Date expireTriggerTime;
+
+    /**
      * 阻塞处理策略
      * Nullable:  true
      */
@@ -77,7 +83,7 @@ public class TaskDO extends BaseEntity {
     private String executorParam;
 
     /**
-     * 任务执行超时时间，单位秒
+     * 任务执行预估时长，单位秒
      * Nullable:  false
      */
     private Integer executorTimeout;
@@ -89,10 +95,10 @@ public class TaskDO extends BaseEntity {
     private Integer executorFailRetryCount;
 
     /**
-     * 重试时间间隔, 单位秒, 逗号分隔
+     * 最大重试次数
      * Nullable:  true
      */
-    private String retryDuration;
+    private String maxRetryTimes;
 
     /**
      * periodic_job_id、pending_job_id等

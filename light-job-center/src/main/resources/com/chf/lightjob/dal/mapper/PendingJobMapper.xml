@@ -16,7 +16,7 @@
     <result column="executor_param" jdbcType="VARCHAR" property="executorParam" />
     <result column="executor_timeout" jdbcType="INTEGER" property="executorTimeout" />
     <result column="executor_fail_retry_count" jdbcType="INTEGER" property="executorFailRetryCount" />
-    <result column="retry_duration" jdbcType="VARCHAR" property="retryDuration" />
+    <result column="max_retry_times" jdbcType="VARCHAR" property="maxRetryTimes" />
     <result column="trigger_mark" jdbcType="BIT" property="triggerMark" />
   </resultMap>
 </mapper>

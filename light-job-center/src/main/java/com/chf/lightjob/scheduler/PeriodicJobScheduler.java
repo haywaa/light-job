@@ -27,6 +27,7 @@ import com.chf.lightjob.enums.MisfireStrategyEnum;
 import com.chf.lightjob.enums.ScheduleTypeEnum;
 import com.chf.lightjob.service.DatabaseTimeService;
 import com.chf.lightjob.service.LockService;
+import com.chf.lightjob.service.TaskService;
 import com.chf.lightjob.service.TaskTriggerService;
 
 /**
@@ -50,6 +51,9 @@ public class PeriodicJobScheduler {
 
     @Autowired
     private DatabaseTimeService databaseTimeService;
+
+    @Autowired
+    private TaskService taskService;
 
     @Autowired
     private TaskMapper taskMapper;
@@ -258,13 +262,12 @@ public class PeriodicJobScheduler {
         taskDO.setJobType(JobTypeEnum.PERIODIC_JOB.name());
         taskDO.setBizKey(schdulerMark);
         taskDO.setPlanTriggerTime(new Date(jobDO.getTriggerNextTime()));
-        //taskDO.setExpireTime(); // TODO
         taskDO.setExecutorAddress(null);
         taskDO.setExecutorHandler(jobDO.getExecutorHandler());
         taskDO.setExecutorParam(jobDO.getExecutorParam());
         taskDO.setExecutorTimeout(jobDO.getExecutorTimeout());
         taskDO.setExecutorFailRetryCount(jobDO.getExecutorFailRetryCount());
-        taskDO.setRetryDuration("20");
+        taskDO.setMaxRetryTimes(jobDO.getMaxRetryTimes());
         taskDO.setFromJobId(jobDO.getId());
         taskDO.setTriggerTime(taskDO.getPlanTriggerTime());
         //taskDO.setTriggerIndex();
@@ -272,6 +275,7 @@ public class PeriodicJobScheduler {
         //taskDO.setFinishTime();
         //taskDO.setParam();
         //taskDO.setTriggerLog();
+        taskService.refreshExpireTime(taskDO);
         return taskDO;
     }
 

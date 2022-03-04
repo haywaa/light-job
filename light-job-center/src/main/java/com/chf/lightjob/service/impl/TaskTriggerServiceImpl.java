@@ -95,15 +95,20 @@ public class TaskTriggerServiceImpl implements TaskTriggerService {
                         // log warn
                         return null;
                     }
-                    if (!firstUnfinshedTask.getFromJobId().equals(taskDO.getFromJobId())) {
-                        if (BlockStrategyEnum.SERIAL_EXECUTION.name().equals(taskDO.getBlockStrategy())) {
-                            // TODO 延长过期时间
-                        } else if (BlockStrategyEnum.DISCARD_LATER.name().equals(taskDO.getBlockStrategy())) {
-                            // TODO 忽略任务
+                    if (!firstUnfinshedTask.getId().equals(taskDO.getId())) {
+                        if (firstUnfinshedTask.getId() < taskDO.getId()) {
+                            if (BlockStrategyEnum.SERIAL_EXECUTION.name().equals(taskDO.getBlockStrategy())) {
+                                // TODO 延长过期时间
+                            } else if (BlockStrategyEnum.DISCARD_LATER.name().equals(taskDO.getBlockStrategy())) {
+                                // TODO 忽略任务
+                            } else {
+                                throw new RuntimeException("invalid block strategy:" + taskDO.getBlockStrategy());
+                            }
+                            return null;
                         } else {
-                            throw new RuntimeException("invalid block strategy:" + taskDO.getBlockStrategy());
+                            // 忽略，说明taskDO已经被异步finished了
+                            return null;
                         }
-                        return null;
                     }
                     notifyExecutor(taskDO);
                     return null;

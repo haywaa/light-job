@@ -57,7 +57,7 @@ public class PendingJobDO extends BaseEntity {
     private String executorParam;
 
     /**
-     * 任务执行超时时间，单位秒
+     * 任务执行预估时长，单位秒
      * Nullable:  false
      */
     private Integer executorTimeout;
@@ -69,10 +69,10 @@ public class PendingJobDO extends BaseEntity {
     private Integer executorFailRetryCount;
 
     /**
-     * 重试时间间隔, 单位秒, 逗号分隔
+     * 最大重试次数
      * Nullable:  true
      */
-    private String retryDuration;
+    private String maxRetryTimes;
 
     /**
      * 0-待触发， 1-已触发

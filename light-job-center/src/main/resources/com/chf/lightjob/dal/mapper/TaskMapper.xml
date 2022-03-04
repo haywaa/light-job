@@ -13,13 +13,14 @@
     <result column="biz_key" jdbcType="VARCHAR" property="bizKey" />
     <result column="plan_trigger_time" jdbcType="TIMESTAMP" property="planTriggerTime" />
     <result column="expire_time" jdbcType="TIMESTAMP" property="expireTime" />
+    <result column="expire_trigger_time" jdbcType="TIMESTAMP" property="expireTriggerTime" />
     <result column="block_strategy" jdbcType="VARCHAR" property="blockStrategy" />
     <result column="executor_address" jdbcType="VARCHAR" property="executorAddress" />
     <result column="executor_handler" jdbcType="VARCHAR" property="executorHandler" />
     <result column="executor_param" jdbcType="VARCHAR" property="executorParam" />
     <result column="executor_timeout" jdbcType="INTEGER" property="executorTimeout" />
     <result column="executor_fail_retry_count" jdbcType="INTEGER" property="executorFailRetryCount" />
-    <result column="retry_duration" jdbcType="VARCHAR" property="retryDuration" />
+    <result column="max_retry_times" jdbcType="VARCHAR" property="maxRetryTimes" />
     <result column="from_job_id" jdbcType="BIGINT" property="fromJobId" />
     <result column="trigger_time" jdbcType="TIMESTAMP" property="triggerTime" />
     <result column="trigger_index" jdbcType="INTEGER" property="triggerIndex" />

@@ -75,6 +75,12 @@ public class PeriodicJobDO extends BaseEntity {
     private String blockStrategy;
 
     /**
+     * 最大重试次数
+     * Nullable:  true
+     */
+    private String maxRetryTimes;
+
+    /**
      * 执行器路由策略
      * Nullable:  true
      */
@@ -93,7 +99,7 @@ public class PeriodicJobDO extends BaseEntity {
     private String executorParam;
 
     /**
-     * 任务执行超时时间，单位秒
+     * 任务执行预估时长，单位秒
      * Nullable:  false
      */
     private Integer executorTimeout;
