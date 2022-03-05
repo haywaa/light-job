@@ -14,6 +14,7 @@ import com.chf.lightjob.dal.entity.TaskDO;
 import com.chf.lightjob.dal.mapper.TaskMapper;
 import com.chf.lightjob.enums.BlockStrategyEnum;
 import com.chf.lightjob.enums.JobTypeEnum;
+import com.chf.lightjob.plugin.ChannelPlugin;
 import com.chf.lightjob.service.DatabaseTimeService;
 import com.chf.lightjob.service.LockService;
 import com.chf.lightjob.service.TaskService;
@@ -38,6 +39,9 @@ public class TaskTriggerServiceImpl implements TaskTriggerService {
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private ChannelPlugin channelPlugin;
 
     private LinkedBlockingQueue<List<TaskDO>> taskListQueue = new LinkedBlockingQueue(5);
     private ThreadPoolExecutor fastTriggerPool = null;
@@ -81,7 +85,6 @@ public class TaskTriggerServiceImpl implements TaskTriggerService {
                         Thread.currentThread().interrupt();
                         break;
                     }
-                    // TODO log
                 }
             }
         });
@@ -129,7 +132,8 @@ public class TaskTriggerServiceImpl implements TaskTriggerService {
 
 
     private void notifyExecutor(TaskDO taskDO) {
-        // TODO 1. send MQ, add Redis event in list OR call executor by rpc
-        // 2. update task trigger info
+        // 1. send MQ, add Redis event in list OR call executor by rpc
+        channelPlugin.notifyExecutor(taskDO);
+        // 2. log trigger info
     }
 }
