@@ -30,7 +30,6 @@ CREATE TABLE `periodic_job` (
     `executor_handler` varchar(255) DEFAULT NULL COMMENT '执行器任务handler',
     `executor_param` varchar(512) DEFAULT NULL COMMENT '执行器任务参数',
     `executor_timeout` int(11) NOT NULL DEFAULT '0' COMMENT '任务执行预估时长，单位秒',
-    `executor_fail_retry_count` int(11) NOT NULL DEFAULT '0' COMMENT '失败重试次数',
     `child_jobid` varchar(255) DEFAULT NULL COMMENT '子任务ID，多个逗号分隔',
     `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态：0-停止，1-运行',
     `trigger_last_time` bigint(13) NOT NULL DEFAULT '0' COMMENT '上次调度时间',
