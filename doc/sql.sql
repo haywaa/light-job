@@ -4,10 +4,19 @@ use `light_job`;
 
 SET NAMES utf8mb4;
 
+CREATE TABLE `light_job_group` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `group_code` varchar(20) NOT NULL COMMENT '执行器Code',
+    `group_name` varchar(30) NOT NULL COMMENT '执行器名称',
+    `gmt_create` datetime NOT NULL COMMENT '创建时间',
+    `gmt_modified` datetime NOT NULL COMMENT '最近更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='执行器';
+
 -- 周期性任务配置表
 CREATE TABLE `periodic_job` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
-    `job_group` varchar(20) NOT NULL COMMENT '执行器主键ID',
+    `job_group` varchar(20) NOT NULL COMMENT '执行器code',
     `job_desc` varchar(255) NOT NULL,
     `add_time` datetime DEFAULT NULL,
     `update_time` datetime DEFAULT NULL,
@@ -109,3 +118,14 @@ CREATE TABLE `light_job_mark` (
 
 INSERT INTO `light_job_lock` ( `lock_name`) VALUES ( 'periodic_job_schedule'), ('pending_job_schedule');
 INSERT INTO `light_job_mark` ( `mark_name`) VALUES ( 'periodic_job_scheduler'), ('pending_job_scheduler');
+
+CREATE TABLE `light_job_user` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `usercode` varchar(20) NOT NULL COMMENt '用户code',
+    `password` varchar(32) NOT NULL DEFAULT '' COMMENT '密码',
+    `user_name` varchar(50) DEFAULT NULL COMMENT '用户名称',
+    `gmt_create` datetime NOT NULL COMMENT '创建时间',
+    `gmt_modified` datetime NOT NULL COMMENT '最近更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY uk(`usercode`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
