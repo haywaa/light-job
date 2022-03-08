@@ -26,7 +26,7 @@ CREATE TABLE `periodic_job` (
     `schedule_conf` varchar(128) DEFAULT NULL COMMENT '调度配置，值含义取决于调度类型',
     `misfire_strategy` varchar(50) NOT NULL DEFAULT 'DO_NOTHING' COMMENT '调度过期策略',
     `block_strategy` varchar(50) DEFAULT NULL COMMENT '阻塞处理策略',
-    `max_retry_times` varchar(50) DEFAULT NULL COMMENT '最大重试次数',
+    `max_retry_times` int(11) DEFAULT NULL COMMENT '最大重试次数',
     `executor_handler` varchar(255) DEFAULT NULL COMMENT '执行器任务handler',
     `executor_param` varchar(512) DEFAULT NULL COMMENT '执行器任务参数',
     `executor_timeout` int(11) NOT NULL DEFAULT '0' COMMENT '任务执行预估时长，单位秒',

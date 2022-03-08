@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chf.lightjob.constants.ResultCode;
+import com.chf.lightjob.controller.web.request.PeriodicJobAddOrUpdateReq;
 import com.chf.lightjob.dal.entity.PeriodicJobDO;
 import com.chf.lightjob.model.DataResult;
 import com.chf.lightjob.scheduler.PeriodicJobScheduler;
@@ -26,8 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/admin/periodicjob")
 public class PeriodicJobController {
 
-    @RequestMapping("/nextTriggerTime")
-    @ResponseBody
+    @RequestMapping("/v1//nextTriggerTime")
     public DataResult<List<String>> nextTriggerTime(String scheduleType, String scheduleConf) {
 
         PeriodicJobDO paramXxlJobInfo = new PeriodicJobDO();
@@ -51,6 +52,10 @@ public class PeriodicJobController {
             return DataResult.failure(ResultCode.FAIL_CODE, "非法表达式：" + e.getMessage());
         }
         return DataResult.success(result);
+    }
 
+    @RequestMapping("/v1/addOrUpdate")
+    public DataResult<Long> addOrUpdate(@RequestBody PeriodicJobAddOrUpdateReq req) {
+        return DataResult.success();
     }
 }

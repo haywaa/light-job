@@ -18,7 +18,7 @@ public class PeriodicJobDO extends BaseEntity {
     private Long id;
 
     /**
-     * 执行器主键ID
+     * 执行器code
      * Nullable:  false
      */
     private String jobGroup;
@@ -78,13 +78,7 @@ public class PeriodicJobDO extends BaseEntity {
      * 最大重试次数
      * Nullable:  true
      */
-    private String maxRetryTimes;
-
-    /**
-     * 执行器路由策略
-     * Nullable:  true
-     */
-    private String executorRouteStrategy;
+    private Integer maxRetryTimes;
 
     /**
      * 执行器任务handler
@@ -103,12 +97,6 @@ public class PeriodicJobDO extends BaseEntity {
      * Nullable:  false
      */
     private Integer executorTimeout;
-
-    /**
-     * 失败重试次数
-     * Nullable:  false
-     */
-    private Integer executorFailRetryCount;
 
     /**
      * 子任务ID，多个逗号分隔

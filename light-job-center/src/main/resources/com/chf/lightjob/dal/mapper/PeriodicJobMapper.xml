@@ -17,12 +17,10 @@
     <result column="schedule_conf" jdbcType="VARCHAR" property="scheduleConf" />
     <result column="misfire_strategy" jdbcType="VARCHAR" property="misfireStrategy" />
     <result column="block_strategy" jdbcType="VARCHAR" property="blockStrategy" />
-    <result column="max_retry_times" jdbcType="VARCHAR" property="maxRetryTimes" />
-    <result column="executor_route_strategy" jdbcType="VARCHAR" property="executorRouteStrategy" />
+    <result column="max_retry_times" jdbcType="INTEGER" property="maxRetryTimes" />
     <result column="executor_handler" jdbcType="VARCHAR" property="executorHandler" />
     <result column="executor_param" jdbcType="VARCHAR" property="executorParam" />
     <result column="executor_timeout" jdbcType="INTEGER" property="executorTimeout" />
-    <result column="executor_fail_retry_count" jdbcType="INTEGER" property="executorFailRetryCount" />
     <result column="child_jobid" jdbcType="VARCHAR" property="childJobid" />
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="trigger_last_time" jdbcType="BIGINT" property="triggerLastTime" />
