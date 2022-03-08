@@ -7,8 +7,11 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import com.chf.lightjob.annotation.Executor;
+import com.chf.lightjob.executor.TaskExecutor;
+import com.chf.lightjob.model.TaskContent;
 import com.chf.lightjob.service.DispatcherService;
 
 /**
@@ -19,16 +22,24 @@ import com.chf.lightjob.service.DispatcherService;
 @Service
 public class DispatcherServiceImpl implements DispatcherService {
 
-    private Map<String, Executor> executorMap;
+    private Map<String, TaskExecutor> executorMap;
 
     @Autowired
-    public DispatcherServiceImpl(List<Executor> executorList) {
+    public DispatcherServiceImpl(List<TaskExecutor> executorList) {
         if (executorList == null) {
             executorMap = Collections.emptyMap();
         } else {
             executorMap = executorList.stream().collect(Collectors.toMap(executor -> {
-                return executor.getClass().getDeclaredAnnotation(Executor.class).code();
+                return executor.handlerCode();
+                //return executor.getClass().getDeclaredAnnotation(Executor.class).code();
             }, o -> o));
         }
+    }
+
+    @Override
+    public void dispatchTask(TaskContent taskContent) throws Exception {
+        TaskExecutor taskExecutor = executorMap.get(taskContent.getJobHandler());
+        Assert.notNull(taskExecutor, "任务执行器不存在");
+        taskExecutor.execute(taskContent);
     }
 }
