@@ -10,4 +10,6 @@ import org.apache.ibatis.annotations.Param;
 public interface LightJobUserTokenMapper extends BaseMapper<LightJobUserTokenDO> {
 
     LightJobUserTokenDO selectByToken(@Param("token") String token);
+
+    int add(LightJobUserTokenDO tokenDO);
 }

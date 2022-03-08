@@ -13,4 +13,8 @@
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
   </resultMap>
+
+  <select id="selectByUsercode" resultMap="BaseResultMap">
+    SELECT * FROM light_job_user WHERE usercode = #{usercode}
+  </select>
 </mapper>

@@ -138,3 +138,7 @@ CREATE TABLE `light_user_token` (
   PRIMARY KEY (`id`),
   UNIQUE KEY uk(`token`, `user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- admin / admin
+INSERT INTO `light_job_user` ( `usercode`, `password`, `user_name`, `gmt_create`, `gmt_modified`) VALUES ('admin', '239c0db342733f700f973a8eccd480ac', 'admin', now(), now());
+

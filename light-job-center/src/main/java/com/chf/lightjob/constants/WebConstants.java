@@ -8,4 +8,5 @@ package com.chf.lightjob.constants;
 public class WebConstants {
 
     public final static String TOKEN_KEY = "_sid";
+    public final static String TOKEN_HEADER = "x-lj-token";
 }

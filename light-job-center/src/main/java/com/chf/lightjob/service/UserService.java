@@ -1,5 +1,7 @@
 package com.chf.lightjob.service;
 
+import com.chf.lightjob.dal.entity.LightJobUserDO;
+
 /**
  * @description
  * @author: davy
@@ -7,7 +9,5 @@ package com.chf.lightjob.service;
  */
 public interface UserService {
 
-    String checkoutToken(String usercode, String password);
-
-    //User checkUser(String token);
+    LightJobUserDO authUser(String usercode, String password);
 }

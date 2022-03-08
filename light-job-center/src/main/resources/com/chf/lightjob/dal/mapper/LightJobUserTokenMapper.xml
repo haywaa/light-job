@@ -17,4 +17,9 @@
   <select id="selectByToken" resultMap="BaseResultMap">
     SELECT * FROM light_job_user_token WHERE token = #{token} AND gmt_expire &gt; now()
   </select>
+
+  <insert id="add">
+    INSERT INTO light_job_user_token(user_id, `token`, `gmt_expire`, `gmt_create`, `gmt_modified`)
+    VALUES (#{userId}, #{token}, #{gmtExpire}, #{gmtCreate}, #{gmtModified})
+  </insert>
 </mapper>
