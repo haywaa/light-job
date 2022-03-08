@@ -92,7 +92,7 @@
 
   <update id="markTaskSuccess">
     UPDATE task SET status = 2 WHERE id IN
-    <foreach collection="taskIds" close=")" open="(" separator="," item="item">
+    <foreach close=")" collection="taskIds" item="item" open="(" separator=",">
       #{item}
     </foreach>
   </update>

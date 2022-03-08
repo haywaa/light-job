@@ -8,4 +8,6 @@ package com.chf.lightjob.constants;
 public class ResultCode {
 
     public static final int FAIL_CODE = 500;
+
+    public static final int AUTH_UNAUTHORIZED = 401;
 }

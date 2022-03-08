@@ -127,3 +127,14 @@ CREATE TABLE `light_job_user` (
     PRIMARY KEY (`id`),
     UNIQUE KEY uk(`usercode`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `light_user_token` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) NOT NULL COMMENt '用户code',
+  `token` varchar(32) NOT NULL DEFAULT '' COMMENT '密码',
+  `gmt_expire` datetime NOT NULL COMMENT '过期时间',
+  `gmt_create` datetime NOT NULL COMMENT '创建时间',
+  `gmt_modified` datetime NOT NULL COMMENT '最近更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY uk(`token`, `user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
