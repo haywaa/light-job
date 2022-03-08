@@ -19,14 +19,22 @@ import com.chf.lightjob.util.PasswordeUtil;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private LightJobUserMapper lightJobUserMappe;
+    private LightJobUserMapper lightJobUserMapper;
 
     @Override
     public LightJobUserDO authUser(String usercode, String password) {
-        LightJobUserDO userDO = lightJobUserMappe.selectByUsercode(usercode);
+        LightJobUserDO userDO = lightJobUserMapper.selectByUsercode(usercode);
         if (userDO == null || !PasswordeUtil.checkPasswordMatch(password, userDO.getPassword())) {
             throw new BizException(ResultCode.INVALID_USER_OR_PASSWORD, "无效的账号或密码");
         }
         return userDO;
+    }
+
+    @Override
+    public LightJobUserDO selectById(Long userId) {
+        if (userId == null) {
+            return null;
+        }
+        return lightJobUserMapper.selectById(userId);
     }
 }

@@ -17,4 +17,8 @@
   <select id="selectByUsercode" resultMap="BaseResultMap">
     SELECT * FROM light_job_user WHERE usercode = #{usercode}
   </select>
+
+  <select id="selectById" resultMap="BaseResultMap">
+    SELECT * FROM light_job_user WHERE id = #{userId}
+  </select>
 </mapper>

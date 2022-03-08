@@ -10,4 +10,5 @@ import org.apache.ibatis.annotations.Param;
 public interface LightJobUserMapper extends BaseMapper<LightJobUserDO> {
 
     LightJobUserDO selectByUsercode(@Param("usercode") String usercode);
+    LightJobUserDO selectById(@Param("userId") long userId);
 }

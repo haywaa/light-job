@@ -9,12 +9,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chf.lightjob.annotation.LoginNotRequired;
 import com.chf.lightjob.constants.WebConstants;
+import com.chf.lightjob.controller.web.intercepter.WebSessionFilter;
 import com.chf.lightjob.controller.web.response.UserResp;
 import com.chf.lightjob.dal.entity.LightJobUserDO;
 import com.chf.lightjob.dal.entity.LightJobUserTokenDO;
@@ -74,6 +76,13 @@ public class UserController {
         tokenDO.setGmtModified(new Date());
         lightJobUserTokenMapper.add(tokenDO);
         addTokenInCookie(WebConstants.TOKEN_KEY, token, request, response);
+        return DataResult.success(convertDO2Resp(lightJobUserDO));
+    }
+
+    @GetMapping(value = "/v1/currentUser")
+    public DataResult<UserResp> currentUser() {
+        Long userId = WebSessionFilter.UserInfoResource.getUserId();
+        LightJobUserDO lightJobUserDO = userService.selectById(userId);
         return DataResult.success(convertDO2Resp(lightJobUserDO));
     }
 

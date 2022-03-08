@@ -10,4 +10,6 @@ import com.chf.lightjob.dal.entity.LightJobUserDO;
 public interface UserService {
 
     LightJobUserDO authUser(String usercode, String password);
+
+    LightJobUserDO selectById(Long userId);
 }
