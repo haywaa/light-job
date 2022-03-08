@@ -129,6 +129,7 @@ public class RedisEventChannel implements InitializingBean, Runnable, Disposable
                     continue;
                 }
 
+                // 避免高延时任务对低延时任务造成的阻塞，可进行线程池隔离优化
                 if (executorService.getCorePoolSize() - executorService.getActiveCount() <= 0) {
                     TimeUnit.MILLISECONDS.sleep(50);
                     continue;
