@@ -98,7 +98,7 @@ public class TaskDO extends BaseEntity {
      * 最大重试次数
      * Nullable:  true
      */
-    private String maxRetryTimes;
+    private Integer maxRetryTimes;
 
     /**
      * periodic_job_id、pending_job_id等

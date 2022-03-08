@@ -266,7 +266,6 @@ public class PeriodicJobScheduler {
         taskDO.setExecutorHandler(jobDO.getExecutorHandler());
         taskDO.setExecutorParam(jobDO.getExecutorParam());
         taskDO.setExecutorTimeout(jobDO.getExecutorTimeout());
-        taskDO.setExecutorFailRetryCount(jobDO.getExecutorFailRetryCount());
         taskDO.setMaxRetryTimes(jobDO.getMaxRetryTimes());
         taskDO.setFromJobId(jobDO.getId());
         taskDO.setTriggerTime(taskDO.getPlanTriggerTime());
