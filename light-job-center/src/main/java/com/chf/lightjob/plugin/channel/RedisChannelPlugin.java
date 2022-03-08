@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-@ConditionalOnProperty(name = "lightjob.channel", value = "redis")
+@ConditionalOnProperty(name = "lightjob.channel", havingValue = "redis")
 public class RedisChannelPlugin implements ChannelPlugin, InitializingBean, DisposableBean, Runnable {
 
     @Autowired
