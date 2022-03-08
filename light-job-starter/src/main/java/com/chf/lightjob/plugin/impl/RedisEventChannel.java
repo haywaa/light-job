@@ -1,6 +1,9 @@
 package com.chf.lightjob.plugin.impl;
 
 import java.util.Date;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.DisposableBean;
@@ -54,9 +57,21 @@ public class RedisEventChannel implements InitializingBean, Runnable, Disposable
     private volatile RedisCommands<String, String> commands;
     private volatile RedisAsyncCommands<String, String> asyncCommands;
     private volatile Thread loopThread;
+    private ThreadPoolExecutor executorService;
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        ThreadFactory threadFactory = new ThreadFactory() {
+            int i = 1;
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r);
+                t.setName("lightjob-pool-" + i);
+                i++;
+                return t;
+            }
+        };
+        executorService = new ThreadPoolExecutor(20, 0, 0L, TimeUnit.SECONDS, new SynchronousQueue<>(), threadFactory);
         restart();
         registerEvent();
     }
@@ -65,6 +80,9 @@ public class RedisEventChannel implements InitializingBean, Runnable, Disposable
     public void destroy() throws Exception {
         if (loopThread != null) {
             loopThread.interrupt();
+        }
+        if (executorService != null) {
+            executorService.shutdown();
         }
     }
 
@@ -110,6 +128,12 @@ public class RedisEventChannel implements InitializingBean, Runnable, Disposable
                     TimeUnit.SECONDS.sleep(10);
                     continue;
                 }
+
+                if (executorService.getCorePoolSize() - executorService.getActiveCount() <= 0) {
+                    TimeUnit.MILLISECONDS.sleep(50);
+                    continue;
+                }
+
                 long startTime = System.currentTimeMillis();
                 KeyValue<String, String> result = asyncCommands.brpop(20, "lightjobq_" + groupCode).get();
                 if (result == null || !StringUtils.hasText(result.getValue())) {
@@ -124,8 +148,15 @@ public class RedisEventChannel implements InitializingBean, Runnable, Disposable
                 if (taskContent.getExpireTime() != null && taskContent.getExpireTime().before(new Date())) {
                     continue;
                 }
-                dispatcherService.dispatchTask(taskContent);
-                // TODO finishTask;
+                TaskContent taskContentF = taskContent;
+                executorService.execute(() -> {
+                    try {
+                        dispatcherService.dispatchTask(taskContentF);
+                        // TODO finishTask;
+                    } catch (Throwable t) {
+                        // TODO mark task failure
+                    }
+                });
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;
