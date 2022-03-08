@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.chf.lightjob.annotation.LoginNotRequired;
 import com.chf.lightjob.constants.WebConstants;
+import com.chf.lightjob.controller.web.response.UserResp;
 import com.chf.lightjob.dal.entity.LightJobUserDO;
 import com.chf.lightjob.dal.entity.LightJobUserTokenDO;
 import com.chf.lightjob.dal.mapper.LightJobUserTokenMapper;
@@ -39,7 +40,7 @@ public class UserController {
 
     @LoginNotRequired
     @RequestMapping(value = "/v1/loginWithPassword")
-    public DataResult loginWithPassword(
+    public DataResult<UserResp> loginWithPassword(
             //            @ApiParam(value = "组织ID", required = true, defaultValue = "0") Long orgId,
             @RequestParam("usercode") String usercode,
             @RequestParam("password") String password,
@@ -73,7 +74,7 @@ public class UserController {
         tokenDO.setGmtModified(new Date());
         lightJobUserTokenMapper.add(tokenDO);
         addTokenInCookie(WebConstants.TOKEN_KEY, token, request, response);
-        return DataResult.success();
+        return DataResult.success(convertDO2Resp(lightJobUserDO));
     }
 
     /**
@@ -125,5 +126,19 @@ public class UserController {
         }
 
         return domain;
+    }
+
+    private static UserResp convertDO2Resp(LightJobUserDO userDO) {
+        if (userDO == null) {
+            return null;
+        }
+
+        UserResp userResp = new UserResp();
+        userResp.setId(userDO.getId());
+        userResp.setUsercode(userDO.getUsercode());
+        userResp.setUserName(userDO.getUserName());
+        userResp.setGmtCreate(userDO.getGmtCreate());
+        userResp.setGmtModified(userDO.getGmtModified());
+        return userResp;
     }
 }
