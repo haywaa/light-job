@@ -21,4 +21,6 @@ public interface TaskMapper extends BaseMapper<TaskDO> {
 
     // TODO
     int updateById(@Param("task") TaskDO taskDO);
+
+    void markTaskSuccess(@Param("taskIds") List<Long> taskIds);
 }

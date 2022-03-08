@@ -1,5 +1,7 @@
 package com.chf.lightjob.service;
 
+import java.util.List;
+
 import com.chf.lightjob.dal.entity.TaskDO;
 
 /**
@@ -18,4 +20,8 @@ public interface TaskService {
      * 忽略任务
      */
     void discardTask(long taskId);
+
+    void markTaskSuccess(List<Long> taskIds);
+
+    void markTaskFailure(List<Long> taskIds);
 }

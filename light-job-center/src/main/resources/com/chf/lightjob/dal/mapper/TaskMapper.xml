@@ -89,4 +89,11 @@
   <select id="selectFirstUnfinishedTaskForJob" resultMap="BaseResultMap">
     SELECT * FROM task WHERE id = (SELECT min(id) FROM task WHERE job_type=#{jobType} AND from_job_id = #{fromJobId} AND status != 2 AND status != 4)
   </select>
+
+  <update id="markTaskSuccess">
+    UPDATE task SET status = 2 WHERE id IN
+    <foreach collection="taskIds" close=")" open="(" separator="," item="item">
+      #{item}
+    </foreach>
+  </update>
 </mapper>
