@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.chf.lightjob.core.cron.CronExpression;
+import com.chf.lightjob.util.cron.CronExpression;
 import com.chf.lightjob.dal.entity.PeriodicJobDO;
 import com.chf.lightjob.dal.entity.TaskDO;
 import com.chf.lightjob.dal.entity.TaskScheduleInfo;

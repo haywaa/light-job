@@ -15,7 +15,7 @@
  * 
  */
 
-package com.chf.lightjob.core.cron;
+package com.chf.lightjob.util.cron;
 
 import java.io.Serializable;
 import java.text.ParseException;
