@@ -153,9 +153,9 @@ public class RedisEventChannel implements InitializingBean, Runnable, Disposable
                 executorService.execute(() -> {
                     try {
                         dispatcherService.dispatchTask(taskContentF);
-                        // TODO finishTask;
+                        markTaskSuccess(taskContentF);
                     } catch (Throwable t) {
-                        // TODO mark task failure
+                        markTaskFailure(taskContentF, t);
                     }
                 });
             } catch (InterruptedException e) {
@@ -163,10 +163,20 @@ public class RedisEventChannel implements InitializingBean, Runnable, Disposable
                 break;
             } catch (Throwable t) {
                 if (taskContent != null) {
-                  // TODO mark task failure
+                    markTaskFailure(taskContent, t);
+                    continue;
                 }
                 log.error("lightjob error: {}", t.getMessage(), t);
             }
         }
+    }
+
+    private void markTaskSuccess(TaskContent taskContent) {
+        asyncCommands.lpush("lightjob_success", String.valueOf(taskContent.getTaskId()));
+    }
+
+    private void markTaskFailure(TaskContent taskContent, Throwable t) {
+        asyncCommands.lpush("lightjob_failure", String.valueOf(taskContent.getTaskId()));
+        log.error("lightjob execute failure, taskId:[{}], triggerIndex:[{}]", taskContent.getTaskId(), taskContent.getTriggerIndex(), t);
     }
 }
