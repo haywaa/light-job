@@ -4,8 +4,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,9 +19,13 @@ import com.chf.lightjob.constants.ErrorCode;
 import com.chf.lightjob.controller.web.intercepter.WebSessionFilter;
 import com.chf.lightjob.controller.web.request.PeriodicJobAddOrUpdateReq;
 import com.chf.lightjob.controller.web.request.PeriodicJobPageReq;
+import com.chf.lightjob.controller.web.response.GroupResp;
 import com.chf.lightjob.controller.web.response.PeriodicJobResp;
+import com.chf.lightjob.dal.entity.LightJobGroupDO;
 import com.chf.lightjob.dal.entity.LightJobUserDO;
 import com.chf.lightjob.dal.entity.PeriodicJobDO;
+import com.chf.lightjob.dal.qo.GroupQO;
+import com.chf.lightjob.dal.qo.PeriodicJobQO;
 import com.chf.lightjob.model.DataResult;
 import com.chf.lightjob.model.PageData;
 import com.chf.lightjob.scheduler.PeriodicJobScheduler;
@@ -100,7 +107,50 @@ public class PeriodicJobController {
 
     @PostMapping("/v1/queryList")
     public DataResult<PageData<PeriodicJobResp>> queryList(@Validated @RequestBody PeriodicJobPageReq req) {
-        // TODO
-        return DataResult.success();
+        PeriodicJobQO qo = new PeriodicJobQO();
+        qo.setGroupCode(req.getGroupCode());
+        qo.setPageNo(Optional.ofNullable(req.getPageNo()).orElse(1));
+        qo.setPageSize(Optional.ofNullable(req.getPageSize()).orElse(20));
+        int count = periodicJobService.countByQuery(qo);
+        if (count == 0) {
+            return DataResult.success(PageData.emptyPage(count));
+        }
+        List<PeriodicJobDO> periodicJobDOList = periodicJobService.listByQuery(qo);
+        if (CollectionUtils.isEmpty(periodicJobDOList)) {
+            return DataResult.success(PageData.emptyPage(count));
+        }
+
+        List<PeriodicJobResp> respList = periodicJobDOList.stream().map(groupDO -> {
+            return convertDoToResp(groupDO);
+        }).collect(Collectors.toList());
+        return DataResult.success(PageData.listPage(count, respList));
+    }
+
+    private static PeriodicJobResp convertDoToResp(PeriodicJobDO jobDO) {
+        if (jobDO == null) {
+            return null;
+        }
+        PeriodicJobResp periodicJobResp = new PeriodicJobResp();
+        periodicJobResp.setId(jobDO.getId());
+        periodicJobResp.setJobGroup(jobDO.getJobGroup());
+        periodicJobResp.setJobDesc(jobDO.getJobDesc());
+        periodicJobResp.setAddTime(jobDO.getAddTime());
+        periodicJobResp.setUpdateTime(jobDO.getUpdateTime());
+        periodicJobResp.setAuthor(jobDO.getAuthor());
+        periodicJobResp.setAlarmEmail(jobDO.getAlarmEmail());
+        periodicJobResp.setScheduleType(jobDO.getScheduleType());
+        periodicJobResp.setScheduleConf(jobDO.getScheduleConf());
+        periodicJobResp.setMisfireStrategy(jobDO.getMisfireStrategy());
+        periodicJobResp.setBlockStrategy(jobDO.getBlockStrategy());
+        periodicJobResp.setMaxRetryTimes(jobDO.getMaxRetryTimes());
+        periodicJobResp.setExecutorHandler(jobDO.getExecutorHandler());
+        periodicJobResp.setExecutorParam(jobDO.getExecutorParam());
+        periodicJobResp.setExecutorTimeout(jobDO.getExecutorTimeout());
+        periodicJobResp.setChildJobid(jobDO.getChildJobid());
+        periodicJobResp.setStatus(jobDO.getStatus());
+        periodicJobResp.setTriggerLastTime(jobDO.getTriggerLastTime());
+        periodicJobResp.setTriggerNextTime(jobDO.getTriggerNextTime());
+        periodicJobResp.setScheduleFailTimes(jobDO.getScheduleFailTimes());
+        return periodicJobResp;
     }
 }

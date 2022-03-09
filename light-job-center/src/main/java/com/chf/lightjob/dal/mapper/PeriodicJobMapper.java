@@ -2,6 +2,8 @@ package com.chf.lightjob.dal.mapper;
 
 import com.chf.lightjob.dal.base.BaseMapper;
 import com.chf.lightjob.dal.entity.PeriodicJobDO;
+import com.chf.lightjob.dal.qo.PeriodicJobQO;
+
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -22,4 +24,8 @@ public interface PeriodicJobMapper extends BaseMapper<PeriodicJobDO> {
     int clearInvalidData();
 
     PeriodicJobDO selectById(@Param("id") long id);
+
+    int countByQuery(PeriodicJobQO qo);
+
+    List<PeriodicJobDO> listByQuery(PeriodicJobQO qo);
 }

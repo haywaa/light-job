@@ -130,4 +130,25 @@
   <select id="selectById" resultMap="BaseResultMap">
     SELECT * FROM periodic_job WHERE id = #{id}
   </select>
+
+  <select id="countByQuery" resultType="int">
+    SELECT count(*) FROM periodic_job
+    <where>
+      <if test="groupCode != null">
+        AND job_group = #{groupCode}
+      </if>
+    </where>
+  </select>
+
+  <select id="listByQuery" resultMap="BaseResultMap">
+    SELECT * FROM periodic_job
+    <where>
+      <if test="groupCode != null">
+        AND job_group = #{groupCode}
+      </if>
+    </where>
+    <if test="startRow != null">
+      limit #{startRow}, #{pageSize}
+    </if>
+  </select>
 </mapper>
