@@ -2,9 +2,11 @@ package com.chf.lightjob.service.impl;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.chf.lightjob.dal.entity.LightJobGroupDO;
+import com.chf.lightjob.dal.mapper.LightJobGroupMapper;
 import com.chf.lightjob.dal.qo.GroupQO;
 import com.chf.lightjob.service.GroupService;
 
@@ -16,6 +18,8 @@ import com.chf.lightjob.service.GroupService;
 @Service
 public class GroupServiceImpl implements GroupService {
 
+    @Autowired
+    private LightJobGroupMapper lightJobGroupMapper;
 
     @Override
     public int countList(GroupQO groupQO) {
@@ -27,6 +31,11 @@ public class GroupServiceImpl implements GroupService {
     public List<LightJobGroupDO> queryList(GroupQO groupQO) {
         // TODO
         return null;
+    }
+
+    @Override
+    public List<LightJobGroupDO> queryAll() {
+        return lightJobGroupMapper.queryAll();
     }
 
     @Override

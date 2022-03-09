@@ -16,5 +16,7 @@ public interface GroupService {
 
     List<LightJobGroupDO> queryList(GroupQO groupQO);
 
+    List<LightJobGroupDO> queryAll();
+
     Long addOrUpdate(LightJobGroupDO groupDO);
 }

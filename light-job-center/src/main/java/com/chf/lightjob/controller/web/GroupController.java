@@ -1,11 +1,13 @@
 package com.chf.lightjob.controller.web;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,6 +52,19 @@ public class GroupController {
             return convertDoToResp(groupDO);
         }).collect(Collectors.toList());
         return DataResult.success(PageData.listPage(count, respList));
+    }
+
+    @GetMapping("/v1/queryAll")
+    public DataResult<List<GroupResp>> queryAll() {
+        List<LightJobGroupDO> groupList = groupService.queryAll();
+        if (CollectionUtils.isEmpty(groupList)) {
+            return DataResult.success(Collections.emptyList());
+        }
+
+        List<GroupResp> respList = groupList.stream().map(groupDO -> {
+            return convertDoToResp(groupDO);
+        }).collect(Collectors.toList());
+        return DataResult.success(respList);
     }
 
     @PostMapping("/v1/addOrUpdate")
