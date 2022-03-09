@@ -26,7 +26,7 @@ public class PeriodicJobServiceImpl implements PeriodicJobService {
     public Long addOrUpdate(PeriodicJobDO periodicJobDO) {
         if (periodicJobDO.getId() != null) {
             checkUpdateInfo(periodicJobDO);
-            periodicJobMapper.updateById(periodicJobDO);
+            periodicJobMapper.updateByPrimaryKey(periodicJobDO);
             return periodicJobDO.getId();
         }
         periodicJobDO.setTriggerNextTime(PeriodicJobScheduler.generateNextValidTime(periodicJobDO, new Date()).getTime());
