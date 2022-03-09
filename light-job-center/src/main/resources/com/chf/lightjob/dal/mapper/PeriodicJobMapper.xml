@@ -35,52 +35,6 @@
     limit #{pagesize}
   </select>
 
-  <insert id="addJob">
-    INSERT INTO periodic_job(
-       `job_group`
-      ,`job_desc`
-      ,`add_time`
-      ,`update_time`
-      ,`author`
-      ,`alarm_email`
-      ,`schedule_type`
-      ,`schedule_conf`
-      ,`misfire_strategy`
-      ,`executor_route_strategy`
-      ,`executor_handler`
-      ,`executor_param`
-      ,`executor_block_strategy`
-      ,`executor_timeout`
-      ,`executor_fail_retry_count`
-      ,`child_jobid`
-      ,`status`
-      ,`trigger_last_time`
-      ,`trigger_next_time`
-      ,`schedule_fail_times`
-    ) VALUES (
-      #{jobGroup}
-      ,#{jobDesc}
-      ,#{addTime}
-      ,#{updateTime}
-      ,#{author}
-      ,#{alarmEmail}
-      ,#{scheduleType}
-      ,#{scheduleConf}
-      ,#{misfireStrategy}
-      ,#{executorRouteStrategy}
-      ,#{executorHandler}
-      ,#{executorParam}
-      ,#{executorBlockStrategy}
-      ,#{executorTimeout}
-      ,#{executorFailRetryCount}
-      ,#{childJobid}
-      ,#{status}
-      ,#{triggerLastTime}
-      ,#{triggerNextTime}
-      ,#{scheduleFailTimes}
-    )
-  </insert>
-
   <insert id="batchUpdateJob">
     INSERT INTO periodic_job(
        `id`

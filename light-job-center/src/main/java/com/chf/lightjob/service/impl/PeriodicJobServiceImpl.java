@@ -2,6 +2,7 @@ package com.chf.lightjob.service.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,8 @@ public class PeriodicJobServiceImpl implements PeriodicJobService {
         }
         periodicJobDO.setTriggerNextTime(PeriodicJobScheduler.generateNextValidTime(periodicJobDO, new Date()).getTime());
         periodicJobDO.setScheduleFailTimes(0);
-        periodicJobMapper.addJob(periodicJobDO);
+        periodicJobDO.setJobDesc(Optional.ofNullable(periodicJobDO.getJobDesc()).orElse(""));
+        periodicJobMapper.insert(periodicJobDO);
         return periodicJobDO.getId();
     }
 

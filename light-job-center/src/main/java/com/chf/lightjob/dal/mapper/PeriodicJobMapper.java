@@ -13,8 +13,6 @@ public interface PeriodicJobMapper extends BaseMapper<PeriodicJobDO> {
 
     List<PeriodicJobDO> selectNowScheduleJob(@Param("preReadSecond") int preReadSecond, @Param("pagesize") int pagesize);
 
-    int addJob(PeriodicJobDO jpb);
-
     int batchUpdateJob(@Param("list") List<PeriodicJobDO> list);
 
     int updateById(PeriodicJobDO job);
