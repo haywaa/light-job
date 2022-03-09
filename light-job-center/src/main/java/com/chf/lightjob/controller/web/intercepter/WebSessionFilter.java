@@ -13,7 +13,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.chf.lightjob.annotation.LoginNotRequired;
-import com.chf.lightjob.constants.ResultCode;
+import com.chf.lightjob.constants.ErrorCode;
 import com.chf.lightjob.dal.entity.LightJobUserTokenDO;
 import com.chf.lightjob.dal.mapper.LightJobUserTokenMapper;
 import com.chf.lightjob.util.CookieUtil;
@@ -53,7 +53,7 @@ public class WebSessionFilter implements HandlerInterceptor {
         if (loginNotRequired == null) {
             // 用户ID存在，微信ID不存在也是登录了
             if (UserInfoResource.USER_ID.get() == null) {
-                responseJson(response, ResultCode.AUTH_UNAUTHORIZED, "请登录");
+                responseJson(response, ErrorCode.AUTH_UNAUTHORIZED.getErrorNo(), "请登录");
                 return false;
             }
         }

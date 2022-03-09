@@ -20,4 +20,6 @@ public interface PeriodicJobMapper extends BaseMapper<PeriodicJobDO> {
     List<PeriodicJobDO> queryAll();
 
     int clearInvalidData();
+
+    PeriodicJobDO selectById(@Param("id") long id);
 }

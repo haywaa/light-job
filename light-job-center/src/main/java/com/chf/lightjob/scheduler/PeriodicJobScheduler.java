@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.chf.lightjob.exception.BizException;
 import com.chf.lightjob.util.cron.CronExpression;
 import com.chf.lightjob.dal.entity.PeriodicJobDO;
 import com.chf.lightjob.dal.entity.TaskDO;
@@ -295,11 +296,15 @@ public class PeriodicJobScheduler {
     }
 
     // ---------------------- tools ----------------------
-    public static Date generateNextValidTime(PeriodicJobDO jobInfo, Date fromTime) throws Exception {
+    public static Date generateNextValidTime(PeriodicJobDO jobInfo, Date fromTime) {
         ScheduleTypeEnum scheduleTypeEnum = ScheduleTypeEnum.match(jobInfo.getScheduleType(), null);
         if (ScheduleTypeEnum.CRON == scheduleTypeEnum) {
-            Date nextValidTime = new CronExpression(jobInfo.getScheduleConf()).getNextValidTimeAfter(fromTime);
-            return nextValidTime;
+            try {
+                Date nextValidTime = new CronExpression(jobInfo.getScheduleConf()).getNextValidTimeAfter(fromTime);
+                return nextValidTime;
+            } catch (Exception e) {
+                throw new BizException("无效的表达式: " + jobInfo.getScheduleConf());
+            }
         } else if (ScheduleTypeEnum.FIX_RATE == scheduleTypeEnum /*|| ScheduleTypeEnum.FIX_DELAY == scheduleTypeEnum*/) {
             return new Date(fromTime.getTime() + Integer.valueOf(jobInfo.getScheduleConf()) * 1000 );
         }

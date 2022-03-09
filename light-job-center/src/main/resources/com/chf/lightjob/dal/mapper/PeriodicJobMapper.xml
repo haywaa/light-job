@@ -81,7 +81,6 @@
     )
   </insert>
 
-
   <insert id="batchUpdateJob">
     INSERT INTO periodic_job(
        `id`
@@ -127,4 +126,8 @@
   <delete id="clearInvalidData">
     DELETE FROM periodic_job WHERE job_group = ''
   </delete>
+
+  <select id="selectById" resultMap="BaseResultMap">
+    SELECT * FROM periodic_job WHERE id = #{id}
+  </select>
 </mapper>

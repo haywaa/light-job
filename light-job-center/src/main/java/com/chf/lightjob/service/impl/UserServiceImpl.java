@@ -3,7 +3,7 @@ package com.chf.lightjob.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.chf.lightjob.constants.ResultCode;
+import com.chf.lightjob.constants.ErrorCode;
 import com.chf.lightjob.dal.entity.LightJobUserDO;
 import com.chf.lightjob.dal.mapper.LightJobUserMapper;
 import com.chf.lightjob.exception.BizException;
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     public LightJobUserDO authUser(String usercode, String password) {
         LightJobUserDO userDO = lightJobUserMapper.selectByUsercode(usercode);
         if (userDO == null || !PasswordeUtil.checkPasswordMatch(password, userDO.getPassword())) {
-            throw new BizException(ResultCode.INVALID_USER_OR_PASSWORD, "无效的账号或密码");
+            throw new BizException(ErrorCode.INVALID_USER_OR_PASSWORD.getErrorNo(), "无效的账号或密码");
         }
         return userDO;
     }

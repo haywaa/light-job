@@ -10,10 +10,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.chf.lightjob.constants.ResultCode;
+import com.chf.lightjob.constants.ErrorCode;
 import com.chf.lightjob.controller.web.intercepter.WebSessionFilter;
 import com.chf.lightjob.controller.web.request.PeriodicJobAddOrUpdateReq;
 import com.chf.lightjob.controller.web.request.PeriodicJobPageReq;
@@ -23,6 +22,7 @@ import com.chf.lightjob.dal.entity.PeriodicJobDO;
 import com.chf.lightjob.model.DataResult;
 import com.chf.lightjob.model.PageData;
 import com.chf.lightjob.scheduler.PeriodicJobScheduler;
+import com.chf.lightjob.service.PeriodicJobService;
 import com.chf.lightjob.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +39,9 @@ public class PeriodicJobController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PeriodicJobService periodicJobService;
 
     @RequestMapping("/v1//nextTriggerTime")
     public DataResult<List<String>> nextTriggerTime(String scheduleType, String scheduleConf) {
@@ -61,7 +64,7 @@ public class PeriodicJobController {
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return DataResult.failure(ResultCode.FAIL_CODE, "非法表达式：" + e.getMessage());
+            return DataResult.failure(ErrorCode.FAIL_CODE.getErrorNo(), "非法表达式：" + e.getMessage());
         }
         return DataResult.success(result);
     }
@@ -91,8 +94,8 @@ public class PeriodicJobController {
         //periodicJobDO.setTriggerLastTime();
         //periodicJobDO.setTriggerNextTime();
         //periodicJobDO.setScheduleFailTimes();
-        // TODO
-        return DataResult.success();
+        Long id = periodicJobService.addOrUpdate(periodicJobDO);
+        return DataResult.success(id);
     }
 
     @PostMapping("/v1/queryList")
