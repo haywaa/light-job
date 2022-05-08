@@ -1,6 +1,6 @@
-package cn.chf.lightjob.api;//package com.chf.lightjob.service;
+package cn.chf.lightjob.api;//package cn.chf.lightjob.service;
 //
-//import com.chf.lightjob.model.DelayTaskCreateRequest;
+//import cn.chf.lightjob.model.DelayTaskCreateRequest;
 //
 ///**
 // * @description

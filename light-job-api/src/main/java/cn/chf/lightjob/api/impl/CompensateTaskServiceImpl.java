@@ -1,9 +1,9 @@
-package cn.chf.lightjob.api.impl;//package com.chf.lightjob.service.impl;
+package cn.chf.lightjob.api.impl;//package cn.chf.lightjob.service.impl;
 //
 //import org.springframework.stereotype.Service;
 //
-//import com.chf.lightjob.model.CompensateTaskCreateRequest;
-//import com.chf.lightjob.service.CompensateTaskService;
+//import cn.chf.lightjob.model.CompensateTaskCreateRequest;
+//import cn.chf.lightjob.service.CompensateTaskService;
 //
 ///**
 // * @description

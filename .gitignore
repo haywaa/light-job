@@ -74,3 +74,4 @@ screenshot
 .eslintcache
 
 #build
+/light-job-web/src/main/web/dist/

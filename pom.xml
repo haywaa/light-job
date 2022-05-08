@@ -5,10 +5,11 @@
   <packaging>pom</packaging>
   <modules>
     <module>light-job-starter</module>
-    <module>light-job-center</module>
+    <module>light-job-web</module>
     <module>light-job-api</module>
+    <module>light-job-dal</module>
   </modules>
-  <groupId>com.chf</groupId>
+  <groupId>cn.chf</groupId>
   <artifactId>light-job</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>light-job</name>
@@ -17,6 +18,23 @@
     <java.version>1.8</java.version>
     <spring-boot.version>2.6.3</spring-boot.version>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>cn.chf</groupId>
+        <artifactId>light-job-dal</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <build>
     <plugins>
