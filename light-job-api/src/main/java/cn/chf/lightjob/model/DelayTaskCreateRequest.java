@@ -1,4 +1,4 @@
-package com.chf.lightjob.model;
+package cn.chf.lightjob.model;
 
 import java.util.Date;
 

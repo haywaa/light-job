@@ -1,4 +1,4 @@
-//package com.chf.lightjob.service.impl;
+package cn.chf.lightjob.api.impl;//package com.chf.lightjob.service.impl;
 //
 //import org.springframework.stereotype.Service;
 //

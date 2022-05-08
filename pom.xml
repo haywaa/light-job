@@ -6,6 +6,7 @@
   <modules>
     <module>light-job-starter</module>
     <module>light-job-center</module>
+    <module>light-job-api</module>
   </modules>
   <groupId>com.chf</groupId>
   <artifactId>light-job</artifactId>

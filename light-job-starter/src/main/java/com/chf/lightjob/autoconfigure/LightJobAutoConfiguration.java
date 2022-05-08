@@ -17,9 +17,9 @@ public class LightJobAutoConfiguration implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         //RedisStore.createRedisStore(
-        //        "huibo001.redis.rds.aliyuncs.com",
+        //        "host",
         //        6379,
-        //        "u5EX7sYg",
+        //        "password",
         //        //                sessionConfig.getSessionServerHost(),
         //        //                sessionConfig.getSessionServerPort(),
         //        //                sessionConfig.getSessionServerPassword(),

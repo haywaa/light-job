@@ -1,4 +1,4 @@
-package com.chf.lightjob.model;
+package cn.chf.lightjob.model;
 
 import lombok.Data;
 
@@ -8,7 +8,7 @@ import lombok.Data;
  * @create: 2022-02-09 23:29
  */
 @Data
-public class CompensateTaskCreateRequest {
+public class AsyncTaskCreateRequest {
 
     private String taskHandler;
 
@@ -21,9 +21,9 @@ public class CompensateTaskCreateRequest {
     }
 
     public static class Builder {
-        private CompensateTaskCreateRequest req = new CompensateTaskCreateRequest();
+        private AsyncTaskCreateRequest req = new AsyncTaskCreateRequest();
 
-        public CompensateTaskCreateRequest build() {
+        public AsyncTaskCreateRequest build() {
             return req;
         }
 
