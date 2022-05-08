@@ -50,7 +50,7 @@ public class MbgGenerator extends PluginAdapter {
     public void setContext(Context context) {
         super.setContext(context);
         // 支持mysql获取注释
-        context.getJdbcConnectionConfiguration().addProperty("useInformationSchema", "true");
+        context.addProperty("useInformationSchema", "true");
     }
 
     @Override
