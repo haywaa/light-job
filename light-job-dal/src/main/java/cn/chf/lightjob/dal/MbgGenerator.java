@@ -55,7 +55,6 @@ public class MbgGenerator extends PluginAdapter {
 
     @Override
     public boolean clientGenerated(Interface interfaze,
-                                   TopLevelClass topLevelClass,
                                    IntrospectedTable introspectedTable) {
         final String baseMapperClassPath = getClass().getPackage().getName() + ".base.BaseMapper";
         FullyQualifiedJavaType baseMapperType = new FullyQualifiedJavaType(BASE_MAPPER_TYPE + "<" + introspectedTable.getBaseRecordType() + ">");
