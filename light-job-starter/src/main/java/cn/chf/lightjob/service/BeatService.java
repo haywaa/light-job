@@ -1,4 +1,4 @@
-package com.chf.lightjob.service;
+package cn.chf.lightjob.service;
 
 /**
  * @description

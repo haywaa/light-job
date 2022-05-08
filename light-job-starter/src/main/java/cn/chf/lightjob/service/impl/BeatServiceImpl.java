@@ -1,9 +1,9 @@
-package com.chf.lightjob.service.impl;
+package cn.chf.lightjob.service.impl;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.stereotype.Service;
 
-import com.chf.lightjob.service.BeatService;
+import cn.chf.lightjob.service.BeatService;
 
 /**
  * @description
