@@ -4,6 +4,16 @@ use `light_job`;
 
 SET NAMES utf8mb4;
 
+CREATE TABLE `light_job_node` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ip` varchar(15) NOT NULL COMMENT '节点IP',
+  `status` varchar(10) NOT NULL COMMENT '状态',
+  `gmt_heatbeat` datetime NOT NULL COMMENT '心跳时间',
+  `gmt_create` datetime NOT NULL COMMENT '创建时间',
+  `gmt_modified` datetime NOT NULL COMMENT '最近更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='节点状态表';
+
 CREATE TABLE `light_job_group` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `group_code` varchar(20) NOT NULL COMMENT '执行器Code',
@@ -18,8 +28,8 @@ CREATE TABLE `periodic_job` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `job_group` varchar(20) NOT NULL COMMENT '执行器code',
     `job_desc` varchar(255) NOT NULL,
-    `add_time` datetime DEFAULT NULL,
-    `update_time` datetime DEFAULT NULL,
+    `gmt_create` datetime DEFAULT NULL,
+    `gmt_modified` datetime DEFAULT NULL,
     `author` varchar(64) DEFAULT NULL COMMENT '作者',
     `alarm_email` varchar(255) DEFAULT NULL COMMENT '报警邮件',
     `schedule_type` varchar(50) NOT NULL DEFAULT 'NONE' COMMENT '调度类型',
@@ -39,70 +49,86 @@ CREATE TABLE `periodic_job` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='周期性作业配置表';
 
 -- 排队中的延时任务表
-CREATE TABLE `pending_job` (
+CREATE TABLE `delay_task` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `job_group` varchar(20) NOT NULL COMMENT '执行器主键ID',
     `job_desc` varchar(255) NOT NULL,
-    `add_time` datetime NOT NULL,
-    `update_time` datetime NOT NULL,
+    `gmt_create` datetime NOT NULL,
+    `gmt_modified` datetime NOT NULL,
     `plan_trigger_time` datetime NOT NULL COMMENT '计划触发时间',
     `executor_handler` varchar(255) DEFAULT NULL COMMENT '执行器任务handler',
     `executor_param` varchar(512) DEFAULT NULL COMMENT '执行器任务参数',
     `executor_timeout` int(11) NOT NULL DEFAULT '0' COMMENT '任务执行预估时长，单位秒',
     `executor_fail_retry_count` int(11) NOT NULL DEFAULT '5' COMMENT '失败重试次数',
     `max_retry_times` varchar(50) DEFAULT NULL COMMENT '最大重试次数',
-    `trigger_mark` tinyint(1) COMMENT '0-待触发， 1-已触发',
+    `status` varchar(10) COMMENT 'WAIT，FINISHED, FAILURE',
     PRIMARY KEY (`id`),
     KEY idx_plan (`plan_trigger_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='延时任务队列表';
 
 -- 任务执行记录表
-CREATE TABLE task (
+CREATE TABLE async_task (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
-    `status` tinyint(4) NOT NULL COMMENT '状态：0-新记录（调度中），1-已调度(执行中), 2-已完成, 4-已丢弃',
     `job_group` varchar(20) NOT NULL COMMENt '任务分组，等同于appName',
-    `job_type` varchar(15) NOT NULL COMMENT '任务类型：PERIODIC_JOB, DELAY_TASK',
     `biz_key` varchar(64) NOT NULL DEFAULT '' COMMENT '业务键，方便查询',
-    `plan_trigger_time` datetime NOT NULL COMMENT '期望触发时间',
-    `expire_time` datetime NOT NULL COMMENT '过期时间',
-    `expire_trigger_time` datetime NOT NULL COMMENT '触发过期时间，MQ消息的过期时间',
-    `block_strategy` varchar(50) DEFAULT NULL COMMENT '阻塞处理策略',
+    `plan_trigger_time` datetime NOT NULL COMMENT '计划触发时间',
     `executor_address` varchar(255) DEFAULT NULL COMMENT '执行器地址，本次执行的地址',
     `executor_handler` varchar(255) DEFAULT NULL COMMENT '执行器任务handler',
     `executor_param` varchar(512) DEFAULT NULL COMMENT '执行器任务参数',
     `executor_timeout` int(11) NOT NULL DEFAULT '0' COMMENT '任务执行预估时长，单位秒',
     `executor_fail_retry_count` int(11) NOT NULL DEFAULT '0' COMMENT '失败重试次数',
     `max_retry_times` varchar(50) DEFAULT NULL COMMENT '最大重试次数',
-    `from_job_id` bigint(20) DEFAULT NULL COMMENT 'periodic_job_id、pending_job_id等',
-    `trigger_time` datetime NULL COMMENT '实际触发时间',
-    `trigger_index` int(11) NULL COMMENT '实际触发次数',
-    `failure_times` int(11) NULL COMMENT '执行失败次数，执行器回调执行失败才算1次',
-    `finish_time` datetime NULL COMMENT '实际完成时间',
-    `trigger_log` text COMMENT '调度-日志',
+    `periodic_job_id` bigint(20) DEFAULT NULL COMMENT 'periodic_job_id',
+    `block_strategy` varchar(50) DEFAULT NULL COMMENT '阻塞处理策略',
+    `gmt_create` datetime NOT NULL COMMENT '创建时间',
+    `gmt_modified` datetime NOT NULL COMMENT '最近执行时间',
     PRIMARY KEY (`id`),
-    KEY idx_expire_trigger(`status`, `expire_time`),
-    KEY idx_from(`from_job_id`),
-    KEY idx_biz(`biz_key`)
+    KEY idx_biz(`biz_key`),
+    KEY idx_pjid(`periodic_job_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-# CREATE TABLE task_trigger_log (
-#   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-#   task_id datetime NOT NULL COMMENT '任务ID',
-#   trigger_time datetime NULL COMMENT '实际触发时间',
-#   expire_trigger_time datetime NOT NULL COMMENT '调度过期时间',
-#   expire_execute_time datetime NOT NULL COMMENT '调度过期时间',
-#   param text DEFAULT NULL COMMENT '参数',
-#   periodic_job_id bigint(20) DEFAULT NULL COMMENT '周期性任务ID',
-#   unique_key varchar(64) NOT NULL COMMENT '唯一健',
-#   trigger_time datetime NULL COMMENT '实际触发时间',
-#   finish_time datetime NULL COMMENT '实际完成时间',
-#   `trigger_log` text COMMENT '调度-日志',
-#   PRIMARY KEY (`id`),
-#   KEY idx_expire_trigger(`status`, `expire_trigger_time`),
-#   KEY idx_expire_execute(`status`, `expire_execute_time`),
-#   UNIQUE KEY uk(unique_key)
-# ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- ----------------- 日志相关 ------------------------
+CREATE TABLE deadline_task (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `job_group` varchar(20) NOT NULL COMMENt '任务分组，等同于appName',
+    `biz_key` varchar(64) NOT NULL DEFAULT '' COMMENT '业务键，方便查询',
+    `plan_trigger_time` datetime NOT NULL COMMENT '计划触发时间',
+    `executor_address` varchar(255) DEFAULT NULL COMMENT '执行器地址，本次执行的地址',
+    `executor_handler` varchar(255) DEFAULT NULL COMMENT '执行器任务handler',
+    `executor_param` varchar(512) DEFAULT NULL COMMENT '执行器任务参数',
+    `executor_timeout` int(11) NOT NULL DEFAULT '0' COMMENT '任务执行预估时长，单位秒',
+    `executor_fail_retry_count` int(11) NOT NULL DEFAULT '0' COMMENT '失败重试次数',
+    `max_retry_times` varchar(50) DEFAULT NULL COMMENT '最大重试次数',
+    `periodic_job_id` bigint(20) DEFAULT NULL COMMENT 'periodic_job_id',
+    `block_strategy` varchar(50) DEFAULT NULL COMMENT '阻塞处理策略',
+    `gmt_create` datetime NOT NULL COMMENT '创建时间',
+    `gmt_modified` datetime NOT NULL COMMENT '最近执行时间',
+    PRIMARY KEY (`id`),
+    KEY idx_biz(`biz_key`),
+    KEY idx_pjid(`periodic_job_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE history_task (
+   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+   `job_group` varchar(20) NOT NULL COMMENt '任务分组，等同于appName',
+   `biz_key` varchar(64) NOT NULL DEFAULT '' COMMENT '业务键，方便查询',
+   `plan_trigger_time` datetime NOT NULL COMMENT '计划触发时间',
+   `executor_address` varchar(255) DEFAULT NULL COMMENT '执行器地址，本次执行的地址',
+   `executor_handler` varchar(255) DEFAULT NULL COMMENT '执行器任务handler',
+   `executor_param` varchar(512) DEFAULT NULL COMMENT '执行器任务参数',
+   `executor_timeout` int(11) NOT NULL DEFAULT '0' COMMENT '任务执行预估时长，单位秒',
+   `executor_fail_retry_count` int(11) NOT NULL DEFAULT '0' COMMENT '失败重试次数',
+   `max_retry_times` varchar(50) DEFAULT NULL COMMENT '最大重试次数',
+   `periodic_job_id` bigint(20) DEFAULT NULL COMMENT 'periodic_job_id',
+   `block_strategy` varchar(50) DEFAULT NULL COMMENT '阻塞处理策略',
+   `gmt_create` datetime NOT NULL COMMENT '创建时间',
+   `gmt_modified` datetime NOT NULL COMMENT '最近执行时间',
+   PRIMARY KEY (`id`),
+   KEY idx_biz(`biz_key`),
+   KEY idx_pjid(`periodic_job_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ------------- 框架并发控制支持 ----------------------
 CREATE TABLE `light_job_lock` (
     `lock_name` varchar(50) NOT NULL COMMENT '锁名称',
     PRIMARY KEY (`lock_name`)
@@ -114,9 +140,10 @@ CREATE TABLE `light_job_mark` (
   PRIMARY KEY (`mark_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `light_job_lock` ( `lock_name`) VALUES ( 'periodic_job_schedule'), ('pending_job_schedule');
-INSERT INTO `light_job_mark` ( `mark_name`) VALUES ( 'periodic_job_scheduler'), ('pending_job_scheduler');
+INSERT INTO `light_job_lock` ( `lock_name`) VALUES ( 'periodic_job_schedule'), ('node_check');
+INSERT INTO `light_job_mark` ( `mark_name`) VALUES ( 'periodic_job_scheduler');
 
+-- ----------------- 用户/登录相关 -----------------------
 CREATE TABLE `light_job_user` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `usercode` varchar(20) NOT NULL COMMENt '用户code',
@@ -141,4 +168,3 @@ CREATE TABLE `light_user_token` (
 
 -- admin / admin
 INSERT INTO `light_job_user` ( `usercode`, `password`, `user_name`, `gmt_create`, `gmt_modified`) VALUES ('admin', '239c0db342733f700f973a8eccd480ac', 'admin', now(), now());
-
